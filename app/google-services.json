@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "727811224469",
+    "firebase_url": "https://psitrabajotutelado.firebaseio.com",
+    "project_id": "psitrabajotutelado",
+    "storage_bucket": "psitrabajotutelado.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:727811224469:android:2232da12e925b832ae3c9c",
+        "android_client_info": {
+          "package_name": "es.udc.psi.drivesafeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "727811224469-uffinc0p5mat7pt2ub9a683d3a1390sk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "es.udc.psi.drivesafeapp",
+            "certificate_hash": "3b019f49e9083e2d2bb564cb040555f94d8e97af"
+          }
+        },
+        {
+          "client_id": "727811224469-gbtphqtgc61fb3654eubmufifcagbpav.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb2_sf3rPD7-5fQsW_W9mRChNWF7y3ThY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "727811224469-gbtphqtgc61fb3654eubmufifcagbpav.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">DriveSafeApp</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="categories_array">
+        <item>Radar</item>
+        <item>Control</item>
+        <item>Obstáculo</item>
+        <item>Aviso</item>
+    </string-array>
+</resources>
