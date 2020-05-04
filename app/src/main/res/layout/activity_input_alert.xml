@@ -10,14 +10,12 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
         android:text="Tipo de alerta"
         android:textColor="#00695C"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.166"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.15" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView"
@@ -26,27 +24,55 @@
         android:layout_marginTop="48dp"
         android:text="Descripción"
         android:textColor="#00695C"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintStart_toStartOf="@+id/editText_desc"
+        app:layout_constraintTop_toBottomOf="@+id/editText_title" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="Nombre de la alerta"
+        android:textColor="#00695C"
+        app:layout_constraintStart_toStartOf="@+id/editText_title"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_cat" />
 
     <Spinner
         android:id="@+id/spinner_cat"
-        android:layout_width="173dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="99dp"
+        android:layout_width="127dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="47dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
+        android:id="@+id/editText_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="@+id/spinner_cat"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <EditText
         android:id="@+id/editText_desc"
-        android:layout_width="302dp"
+        android:layout_width="match_parent"
         android:layout_height="96dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
         android:ems="10"
         android:gravity="start|top"
         android:inputType="textMultiLine"
-        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="@+id/editText_title"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <Button
@@ -60,6 +86,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_desc" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
