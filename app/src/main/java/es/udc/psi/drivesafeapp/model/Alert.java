@@ -1,13 +1,15 @@
-package es.udc.psi.drivesafeapp;
+package es.udc.psi.drivesafeapp.model;
 
 public class Alert {
 
-    String alertid, category, description;
-    Double longitude, latitude;
+    private int category;
+    private String alertid, title, description;
+    private Double longitude, latitude;
 
-    public Alert(String alertid, String category, String description, Double longitude, Double latitude) {
+    public Alert(String alertid, int category, String title, String description, Double longitude, Double latitude) {
         this.alertid = alertid;
         this.category = category;
+        this.title = title;
         this.description = description;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -17,8 +19,12 @@ public class Alert {
         return alertid;
     }
 
-    public String getCategory() {
+    public int getCategory() {
         return category;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {

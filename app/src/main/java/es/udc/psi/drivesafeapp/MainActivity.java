@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -14,21 +13,21 @@ import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import java.util.ArrayList;
+
+import es.udc.psi.drivesafeapp.model.Alert;
 
 public class MainActivity extends AppCompatActivity {
 
     //Tutoriales basicos
     //https://www.youtube.com/watch?v=2duc77R4Hqw
     //https://www.youtube.com/watch?v=foS6l8Wb1DM
+    //https://www.youtube.com/watch?v=18VcnYN5_LM
 
     //cuenta de firebase:
     //fic.psi.1920@gmail.com
@@ -37,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "ViewDatabase";
     private DatabaseReference alertDatabase;
-    private ListView mListView;
+    private RecyclerView recyclerView;
+    AlertAdapter alertAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mListView = findViewById(R.id.listView_alerts);
+        recyclerView = findViewById(R.id.recyclerView);
+
 
         alertDatabase = FirebaseDatabase.getInstance().getReference().child("Alert"); //el nombre de la clase java es "Alert"
 
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, InputAlert.class);
+                Intent intent = new Intent(MainActivity.this, InputAlertActivity.class);
                 startActivity(intent);
             }
         });
@@ -72,22 +73,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void showData(DataSnapshot dataSnapshot) {
-        ArrayList<String> array = new ArrayList<>();
+        ArrayList<Alert> alertsArray = new ArrayList<>();
         for(DataSnapshot ds : dataSnapshot.getChildren()) {
-            String cat = ds.child("category").getValue(String.class);
+            String id = ds.child("alertid").getValue(String.class);
+            int cat = ds.child("category").getValue(Integer.class);
+            String title = ds.child("title").getValue(String.class);
             String desc = ds.child("description").getValue(String.class);
-            double lat = ds.child("latitude").getValue(Double.class);
             double lon = ds.child("longitude").getValue(Double.class);
-
-            array.add(cat+": "+desc);
-
-            Log.d("TAG",   "categoria: " + cat + " /description: " + desc + " /lat: " + lat + " /long: " + lon);
+            double lat = ds.child("latitude").getValue(Double.class);
+            Alert newAlert = new Alert(id, cat, title, desc, lon, lat);
+            alertsArray.add(newAlert);
         }
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, array);
-        mListView.setAdapter(adapter);
-
-
+        alertAdapter =  new AlertAdapter(this, alertsArray);
+        recyclerView.setAdapter(alertAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 /*

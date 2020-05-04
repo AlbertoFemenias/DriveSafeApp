@@ -5,6 +5,7 @@
         <item>Radar</item>
         <item>Control</item>
         <item>Obstáculo</item>
+        <item>Helicóptero</item>
         <item>Aviso</item>
     </string-array>
 </resources>

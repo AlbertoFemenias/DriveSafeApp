@@ -14,10 +14,12 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class InputAlert extends AppCompatActivity {
+import es.udc.psi.drivesafeapp.model.Alert;
+
+public class InputAlertActivity extends AppCompatActivity {
 
 
-    EditText editDesc;
+    EditText editDesc, editTitle;
     Spinner spinnerCat;
     Button btnSubmit;
 
@@ -32,6 +34,7 @@ public class InputAlert extends AppCompatActivity {
         alertDatabase = FirebaseDatabase.getInstance().getReference("Alert");
 
 
+        editTitle = findViewById(R.id.editText_title);
         editDesc = findViewById(R.id.editText_desc);
         btnSubmit = findViewById(R.id.btn_submit);
         spinnerCat = findViewById(R.id.spinner_cat);
@@ -52,14 +55,15 @@ public class InputAlert extends AppCompatActivity {
     }
 
     public void registerAlert (){
-        String cat = spinnerCat.getSelectedItem().toString();
+        int cat =  spinnerCat.getSelectedItemPosition();
+        String title = editTitle.getText().toString();
         String desc = editDesc.getText().toString();
         double lat = 314;
         double lon = 159;
 
         if(!TextUtils.isEmpty(desc)) {
             String id = alertDatabase.push().getKey();
-            Alert newAlert = new Alert(id, cat, desc, lon, lat);
+            Alert newAlert = new Alert(id, cat, title,  desc, lon, lat);
             alertDatabase.child(id).setValue(newAlert);
             //alertDatabase.setValue("Hello world");
             Toast.makeText(this, "Alerta registrada", Toast.LENGTH_LONG).show();
