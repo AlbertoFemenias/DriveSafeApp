@@ -39,6 +39,8 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
     Spinner spinnerCat;
     Button btnSubmit;
 
+    Double lat, lon;
+
     private GoogleMap mMap;
     private DatabaseReference alertDatabase;
 
@@ -102,10 +104,6 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
         int cat =  spinnerCat.getSelectedItemPosition();
         String title = editTitle.getText().toString();
         String desc = editDesc.getText().toString();
-        double lat = 314;
-        double lon = 159;
-
-
         String id = alertDatabase.push().getKey();
         Alert newAlert = new Alert(id, cat, title,  desc, lon, lat);
         alertDatabase.child(id).setValue(newAlert);
@@ -133,8 +131,8 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
         if (requestCode == LAUNCH_MAP_ACTIVITY) {
             if(resultCode == Activity.RESULT_OK){
                 selectedCoordinates = true;
-                 Double lat =data.getDoubleExtra("lat", 0);
-                 Double lon =data.getDoubleExtra("lon", 0);
+                  lat =data.getDoubleExtra("lat", 0);
+                  lon =data.getDoubleExtra("lon", 0);
                 LatLng pos = new LatLng(lat, lon);
                 mMap.addMarker(new MarkerOptions()
                         .position(pos)
