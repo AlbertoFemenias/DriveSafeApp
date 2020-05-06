@@ -2,6 +2,7 @@ package es.udc.psi.drivesafeapp;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference alertDatabase;
     private RecyclerView recyclerView;
     AlertAdapter alertAdapter;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //BD
+        startLoadingDialog();
         alertDatabase.addValueEventListener(new ValueEventListener() {
             @Override //onDataChange se llama siempre que entras en la app o cuando algo cambia en la BD
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -88,9 +91,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                progressDialog.dismiss();
             }
         });
+    }
+
+
+    void startLoadingDialog(){
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setTitle("Cargando..."); // Setting Message
+        progressDialog.setMessage("Se están cargando las alertas cercanas"); // Setting Title
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialog.setCancelable(false);
+        progressDialog.show(); // Display Progress Dialog
     }
 
     @Override
@@ -122,17 +135,17 @@ public class MainActivity extends AppCompatActivity {
         for(DataSnapshot ds : dataSnapshot.getChildren()) {
             String id = ds.child("alertid").getValue(String.class);
             int cat = ds.child("category").getValue(Integer.class);
-            String title = ds.child("title").getValue(String.class);
+            String time = ds.child("time").getValue(String.class);
             String desc = ds.child("description").getValue(String.class);
             double lon = ds.child("longitude").getValue(Double.class);
             double lat = ds.child("latitude").getValue(Double.class);
-            Alert newAlert = new Alert(id, cat, title, desc, lon, lat);
+            Alert newAlert = new Alert(id, cat, desc, time, lon, lat);
             alertsArray.add(newAlert);
         }
         alertAdapter =  new AlertAdapter(this, alertsArray);
         recyclerView.setAdapter(alertAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        progressDialog.dismiss();
     }
 /*
     @Override
