@@ -1,11 +1,13 @@
 package es.udc.psi.drivesafeapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -14,32 +16,37 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import es.udc.psi.drivesafeapp.model.Alert;
 
 public class ExpandedAlertActivity extends AppCompatActivity implements OnMapReadyCallback  {
 
+    private DatabaseReference alertDatabase;
+
     private GoogleMap mMap;
+    Alert alert;
 
     ImageView mainImageView;
-    TextView titleTV, descriptionTV;
+    TextView hourTV, descriptionTV;
+    int icons[] = {R.drawable.radar_icon, R.drawable.control_icon, R.drawable.obstacle_icon, R.drawable.helicopter_icon, R.drawable.warning_icon};
 
-    String titleText, descText;
-    int icon;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.expanded_alert);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync( this);
+        alertDatabase = FirebaseDatabase.getInstance().getReference("Alert");
+
 
         mainImageView = findViewById(R.id.mainImageView);
-        titleTV = findViewById(R.id.title);
+        hourTV = findViewById(R.id.hour);
         descriptionTV = findViewById(R.id.description);
 
         getData();
-        loadData();
     }
 
     @Override
@@ -48,31 +55,58 @@ public class ExpandedAlertActivity extends AppCompatActivity implements OnMapRea
         mMap.setMyLocationEnabled(true);
 
         // Add a marker in Sydney and move the camera
-        LatLng coruña = new LatLng(43.3623, -8.4115);
+        LatLng pos = new LatLng(alert.getLatitude(), alert.getLongitude());
 
         mMap.addMarker(new MarkerOptions()
-                .position(coruña)
-                .title(titleText)
-                .snippet(descText)
+                .position(pos)
+                .title(alert.getTime())
+                .snippet(alert.getDescription())
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
         );
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coruña, 14));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14));
     }
 
     private void getData(){
-        if (getIntent().hasExtra("title") && getIntent().hasExtra("description") && getIntent().hasExtra("catIcon")){
+        if (getIntent().hasExtra("alert")){
+            alert = (Alert) getIntent().getSerializableExtra("alert");
 
-            titleText = getIntent().getStringExtra("title");
-            descText = getIntent().getStringExtra("description");
-            icon = getIntent().getIntExtra("catIcon", 1);
+            hourTV.setText(alert.getTime());
+            descriptionTV.setText(alert.getDescription());
+            mainImageView.setImageResource(icons[alert.getCategory()]);
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync( this);
+
+
         } else{
-
         }
     }
 
-    private void loadData(){
-        titleTV.setText(titleText);
-        descriptionTV.setText(descText);
-        mainImageView.setImageResource(icon);
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_expanded_alert, menu);
+        return true;
     }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_report) {
+            Toast.makeText(this, "REPORTAR ALERTA AHORA", Toast.LENGTH_LONG).show();
+            alertDatabase.child(alert.getAlertid()).removeValue();
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }
