@@ -1,6 +1,12 @@
 package es.udc.psi.drivesafeapp;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -13,10 +19,15 @@ import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -35,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "ViewDatabase";
+    private static final int MY_PERMISSIONS_LOCATION = 666;
     private DatabaseReference alertDatabase;
     private RecyclerView recyclerView;
     AlertAdapter alertAdapter;
@@ -48,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
 
-
         alertDatabase = FirebaseDatabase.getInstance().getReference().child("Alert"); //el nombre de la clase java es "Alert"
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -60,6 +71,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        //PERMISO GPS
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]
+                    {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_LOCATION);
+        }
+
+        //BD
         alertDatabase.addValueEventListener(new ValueEventListener() {
             @Override //onDataChange se llama siempre que entras en la app o cuando algo cambia en la BD
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -72,6 +92,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int reqCode, String perm[], int[] grantRes) {
+        switch (reqCode) {
+            case MY_PERMISSIONS_LOCATION:
+                if (grantRes.length > 0 && grantRes[0] == PackageManager.PERMISSION_GRANTED) {
+                    //TENEMOS PERMISOS!!!
+                }else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                    alertDialog.setTitle("SE NECESITAN PERMISOS DE GPS");
+                    alertDialog.setMessage("La aplicación va a cerrarse");
+                    alertDialog.show();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            Runtime.getRuntime().exit(0);
+                        }
+                    }, 3000);
+
+                }
+                return;
+        } }
+
 
 
     private void showData(DataSnapshot dataSnapshot) {

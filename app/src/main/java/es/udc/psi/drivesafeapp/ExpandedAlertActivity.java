@@ -11,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -44,12 +45,18 @@ public class ExpandedAlertActivity extends AppCompatActivity implements OnMapRea
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
 
         // Add a marker in Sydney and move the camera
         LatLng coruña = new LatLng(43.3623, -8.4115);
 
-        mMap.addMarker(new MarkerOptions().position(coruña).title("Alerta"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coruña, 12));
+        mMap.addMarker(new MarkerOptions()
+                .position(coruña)
+                .title(titleText)
+                .snippet(descText)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+        );
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coruña, 14));
     }
 
     private void getData(){
