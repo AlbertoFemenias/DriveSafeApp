@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="es.udc.psi.drivesafeapp.MainActivity">
+    <item
+        android:id="@+id/action_report"
+        android:orderInCategory="100"
+        android:title="Reportar alerta"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_share"
+        android:title="compartir"
+        android:icon="@android:drawable/ic_menu_share"
+        app:showAsAction="always"
+         />
+</menu>

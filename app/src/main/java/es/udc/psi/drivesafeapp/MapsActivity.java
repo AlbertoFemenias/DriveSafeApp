@@ -72,7 +72,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         mMap.setOnCameraMoveListener(this);
 
         myMarker = mMap.addMarker(new MarkerOptions()
-                .position(MADRID));
+                .position(MADRID)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
         myMarker.setTag(0);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MADRID, 8));
 

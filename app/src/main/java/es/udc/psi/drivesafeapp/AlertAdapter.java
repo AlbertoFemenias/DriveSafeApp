@@ -39,11 +39,11 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
-        String title = alertsArray.get(position).getTitle();
+        String time = alertsArray.get(position).getTime();
         String description = alertsArray.get(position).getDescription();
         int catIcon = icons[alertsArray.get(position).getCategory()];
 
-        holder.title.setText(title);
+        holder.time.setText(time);
         holder.description.setText(description);
         holder.icon.setImageResource(catIcon);
 
@@ -51,9 +51,7 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyViewHolder
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ExpandedAlertActivity.class);
-                intent.putExtra("title", alertsArray.get(position).getTitle());
-                intent.putExtra("description", alertsArray.get(position).getDescription());
-                intent.putExtra("catIcon", icons[alertsArray.get(position).getCategory()]);
+                intent.putExtra("alert", alertsArray.get(position));
                 context.startActivity(intent);
             }
 
@@ -69,14 +67,14 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyViewHolder
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title, description;
+        TextView time, description;
         ImageView icon;
         ConstraintLayout mainLayout;
 
         public MyViewHolder(@NonNull View itemView) {
 
             super(itemView);
-            title = itemView.findViewById(R.id.rowTitle);
+            time = itemView.findViewById(R.id.rowTime);
             description = itemView.findViewById(R.id.rowDescription);
             icon = itemView.findViewById(R.id.rowIconView);
             mainLayout = itemView.findViewById(R.id.alertRowLayout);

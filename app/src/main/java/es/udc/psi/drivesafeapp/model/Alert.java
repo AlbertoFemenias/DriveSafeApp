@@ -1,15 +1,17 @@
 package es.udc.psi.drivesafeapp.model;
 
-public class Alert {
+import java.io.Serializable;
+
+public class Alert implements Serializable {
 
     private int category;
-    private String alertid, title, description;
+    private String alertid, time, description;
     private Double longitude, latitude;
 
-    public Alert(String alertid, int category, String title, String description, Double longitude, Double latitude) {
+    public Alert(String alertid, int category, String description, String title, Double longitude, Double latitude) {
         this.alertid = alertid;
         this.category = category;
-        this.title = title;
+        this.time = title;
         this.description = description;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -23,8 +25,8 @@ public class Alert {
         return category;
     }
 
-    public String getTitle() {
-        return title;
+    public String getTime() {
+        return time;
     }
 
     public String getDescription() {

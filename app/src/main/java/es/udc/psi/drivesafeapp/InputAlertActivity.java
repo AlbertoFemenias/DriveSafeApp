@@ -27,7 +27,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import es.udc.psi.drivesafeapp.model.Alert;
 
@@ -35,7 +39,7 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
 
     int LAUNCH_MAP_ACTIVITY = 111;
     boolean selectedCoordinates = false;
-    EditText editDesc, editTitle;
+    EditText editDesc;
     Spinner spinnerCat;
     Button btnSubmit;
 
@@ -57,7 +61,6 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
 
         alertDatabase = FirebaseDatabase.getInstance().getReference("Alert");
 
-        editTitle = findViewById(R.id.editText_title);
         editDesc = findViewById(R.id.editText_desc);
         btnSubmit = findViewById(R.id.btn_submit);
         spinnerCat = findViewById(R.id.spinner_cat);
@@ -74,12 +77,12 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedCoordinates && editTitle.getText().toString().length()>5){
+                if (selectedCoordinates && editDesc.getText().toString().length()>5){
                     registerAlert();
                 }else{
                     if(!selectedCoordinates)
                         showDialog("Debes seleccionar un punto en el mapa");
-                    if(editTitle.getText().toString().length()<5)
+                    if(editDesc.getText().toString().length()<5)
                         showDialog("Debes introducir un título válido");
                 }
 
@@ -102,14 +105,21 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
 
     public void registerAlert (){
         int cat =  spinnerCat.getSelectedItemPosition();
-        String title = editTitle.getText().toString();
         String desc = editDesc.getText().toString();
+
+        //String desc = editDesc.getText().toString();
+        Calendar cal = Calendar.getInstance();
+        Date currentLocalTime = cal.getTime();
+        DateFormat date = new SimpleDateFormat("HH:mm - dd/MM");
+        String localTime = date.format(currentLocalTime);
+
         String id = alertDatabase.push().getKey();
-        Alert newAlert = new Alert(id, cat, title,  desc, lon, lat);
+        Alert newAlert = new Alert(id, cat, desc,  localTime, lon, lat);
         alertDatabase.child(id).setValue(newAlert);
         //alertDatabase.setValue("Hello world");
         Toast.makeText(this, "Alerta registrada", Toast.LENGTH_LONG).show();
-        finish();
+        //finish();
+        onBackPressed();
 
     }
 
@@ -136,7 +146,7 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
                 LatLng pos = new LatLng(lat, lon);
                 mMap.addMarker(new MarkerOptions()
                         .position(pos)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 8));
 
             }
