@@ -10,11 +10,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
@@ -26,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -49,9 +56,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "ViewDatabase";
     private static final int MY_PERMISSIONS_LOCATION = 666;
     private DatabaseReference alertDatabase;
+    private DatabaseReference geoDatabase;
+    private GeoFire geoFire;
     private RecyclerView recyclerView;
     AlertAdapter alertAdapter;
     ProgressDialog progressDialog;
+    ArrayList<Alert> alertsArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
 
         alertDatabase = FirebaseDatabase.getInstance().getReference().child("Alert"); //el nombre de la clase java es "Alert"
+        geoDatabase = FirebaseDatabase.getInstance().getReference("Geo");
+        geoFire = new GeoFire(geoDatabase);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -81,9 +93,33 @@ public class MainActivity extends AppCompatActivity {
                     {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_LOCATION);
         }
 
+        //Set Up recyclerView
+        alertAdapter =  new AlertAdapter(this, alertsArray);
+        recyclerView.setAdapter(alertAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         //BD
         startLoadingDialog();
-        alertDatabase.addValueEventListener(new ValueEventListener() {
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(43.6620, -7.36), 80);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(final String key, GeoLocation location) {
+                Log.d(TAG, String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+                saveAlertFromKey(key);
+            }
+            @Override
+            public void onKeyExited(String key) {}
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {}
+            @Override
+            public void onGeoQueryReady() {
+                progressDialog.dismiss();
+            }
+            @Override
+            public void onGeoQueryError(DatabaseError error) {}
+        });
+        //startLoadingDialog();
+        /*alertDatabase.addValueEventListener(new ValueEventListener() {
             @Override //onDataChange se llama siempre que entras en la app o cuando algo cambia en la BD
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 showData(dataSnapshot);
@@ -93,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 progressDialog.dismiss();
             }
-        });
+        });*/
     }
 
 
@@ -128,8 +164,30 @@ public class MainActivity extends AppCompatActivity {
                 return;
         } }
 
+    void saveAlertFromKey (final String key){
+        alertDatabase.child(key).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot ds) {
+                if (ds.getValue() != null) {
+                    String id = ds.child("alertid").getValue(String.class);
+                    int cat = ds.child("category").getValue(Integer.class);
+                    String time = ds.child("time").getValue(String.class);
+                    String desc = ds.child("description").getValue(String.class);
+                    double lon = ds.child("longitude").getValue(Double.class);
+                    double lat = ds.child("latitude").getValue(Double.class);
+                    Alert newAlert = new Alert(id, cat, desc, time, lon, lat);
+                    alertsArray.add(newAlert);
+                    alertAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
 
 
+/*
     private void showData(DataSnapshot dataSnapshot) {
         ArrayList<Alert> alertsArray = new ArrayList<>();
         for(DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -146,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(alertAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         progressDialog.dismiss();
-    }
+    }*/
 /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
