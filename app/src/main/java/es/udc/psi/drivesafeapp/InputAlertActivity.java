@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,6 +26,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -47,6 +50,8 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
 
     private GoogleMap mMap;
     private DatabaseReference alertDatabase;
+    private DatabaseReference geoDatabase;
+    private GeoFire geoFire;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,8 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
         mapFragment.getMapAsync(this);
 
         alertDatabase = FirebaseDatabase.getInstance().getReference("Alert");
-
+        geoDatabase = FirebaseDatabase.getInstance().getReference("Geo");
+        geoFire = new GeoFire(geoDatabase);
         editDesc = findViewById(R.id.editText_desc);
         btnSubmit = findViewById(R.id.btn_submit);
         spinnerCat = findViewById(R.id.spinner_cat);
@@ -106,19 +112,18 @@ public class InputAlertActivity extends AppCompatActivity implements OnMapReadyC
     public void registerAlert (){
         int cat =  spinnerCat.getSelectedItemPosition();
         String desc = editDesc.getText().toString();
-
-        //String desc = editDesc.getText().toString();
-        Calendar cal = Calendar.getInstance();
-        Date currentLocalTime = cal.getTime();
+        Date currentLocalTime = Calendar.getInstance().getTime();
         DateFormat date = new SimpleDateFormat("HH:mm - dd/MM");
         String localTime = date.format(currentLocalTime);
 
         String id = alertDatabase.push().getKey();
         Alert newAlert = new Alert(id, cat, desc,  localTime, lon, lat);
         alertDatabase.child(id).setValue(newAlert);
-        //alertDatabase.setValue("Hello world");
+
+        geoFire.setLocation(id,new GeoLocation(lat, lon),
+                new GeoFire.CompletionListener(){ @Override public void onComplete(String key, DatabaseError error) { }});
+
         Toast.makeText(this, "Alerta registrada", Toast.LENGTH_LONG).show();
-        //finish();
         onBackPressed();
 
     }

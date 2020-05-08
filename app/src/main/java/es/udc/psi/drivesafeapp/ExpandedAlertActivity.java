@@ -11,6 +11,7 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -26,6 +28,7 @@ import es.udc.psi.drivesafeapp.model.Alert;
 public class ExpandedAlertActivity extends AppCompatActivity implements OnMapReadyCallback  {
 
     private DatabaseReference alertDatabase;
+    private DatabaseReference geoDatabase;
 
     private GoogleMap mMap;
     Alert alert;
@@ -42,7 +45,7 @@ public class ExpandedAlertActivity extends AppCompatActivity implements OnMapRea
         setContentView(R.layout.expanded_alert);
 
         alertDatabase = FirebaseDatabase.getInstance().getReference("Alert");
-
+        geoDatabase = FirebaseDatabase.getInstance().getReference("Geo");
 
         mainImageView = findViewById(R.id.mainImageView);
         hourTV = findViewById(R.id.hour);
@@ -109,6 +112,7 @@ public class ExpandedAlertActivity extends AppCompatActivity implements OnMapRea
         if (id == R.id.action_report) {
             //Toast.makeText(this, "REPORTAR ALERTA AHORA", Toast.LENGTH_LONG).show();
             alertDatabase.child(alert.getAlertid()).removeValue();
+            geoDatabase.child(alert.getAlertid()).removeValue();
             onBackPressed();
             return true;
         }
