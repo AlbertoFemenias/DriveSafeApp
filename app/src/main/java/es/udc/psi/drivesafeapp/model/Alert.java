@@ -8,10 +8,10 @@ public class Alert implements Serializable {
     private String alertid, time, description;
     private Double longitude, latitude;
 
-    public Alert(String alertid, int category, String description, String title, Double longitude, Double latitude) {
+    public Alert(String alertid, int category, String description, String time, Double longitude, Double latitude) {
         this.alertid = alertid;
         this.category = category;
-        this.time = title;
+        this.time = time;
         this.description = description;
         this.longitude = longitude;
         this.latitude = latitude;

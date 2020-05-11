@@ -13,17 +13,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import es.udc.psi.drivesafeapp.model.Alert;
 
 public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyViewHolder> {
 
-    ArrayList<Alert> alertsArray;
+    List<Alert> alertsArray;
     int icons[] = {R.drawable.radar_icon, R.drawable.control_icon, R.drawable.obstacle_icon, R.drawable.helicopter_icon, R.drawable.warning_icon};
     Context context;
 
 
-    public AlertAdapter(Context ctx, ArrayList<Alert> alerts){
+    public AlertAdapter(Context ctx, List<Alert> alerts){
         context = ctx;
         alertsArray = alerts;
 
@@ -52,6 +53,7 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyViewHolder
             public void onClick(View v) {
                 Intent intent = new Intent(context, ExpandedAlertActivity.class);
                 intent.putExtra("alert", alertsArray.get(position));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
 
@@ -61,9 +63,9 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyViewHolder
 
     @Override
     public int getItemCount() {
-
         return alertsArray.size();
     }
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
