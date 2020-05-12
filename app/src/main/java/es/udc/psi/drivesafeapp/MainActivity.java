@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        signalGPS = false;
 
         recyclerView = findViewById(R.id.recyclerView);
 
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 == PackageManager.PERMISSION_GRANTED) {
             //location manager
             locateManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            locateManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            locateManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, this);
         }
 
         //Set Up recyclerView
@@ -115,16 +116,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     protected void onPause() {
         super.onPause();
-        locateManager.removeUpdates(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            locateManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            locateManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        if (locateManager != null) {
+            locateManager.removeUpdates(this);
         }
     }
 
