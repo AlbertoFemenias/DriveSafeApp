@@ -96,12 +96,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             ActivityCompat.requestPermissions(this, new String[]
                     {Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_LOCATION);
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            //location manager
-            locateManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            locateManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, this);
-        }
+        startLocationManager();
 
         //Set Up recyclerView
         alertAdapter = new AlertAdapter(this, alertsArray);
@@ -114,11 +109,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         if (locateManager != null) {
             locateManager.removeUpdates(this);
         }
+    }
+
+    void startLocationManager() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locateManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locateManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, this);
     }
 
     
@@ -137,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         switch (reqCode) {
             case MY_PERMISSIONS_LOCATION:
                 if (grantRes.length > 0 && grantRes[0] == PackageManager.PERMISSION_GRANTED) {
-                    //tenemos permisos pero es arriba donde ponemos a andar al location manager
+                    startLocationManager();
                 }else {
                     AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                     alertDialog.setTitle("SE NECESITAN PERMISOS DE GPS");
